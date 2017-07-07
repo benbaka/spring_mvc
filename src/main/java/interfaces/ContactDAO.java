@@ -5,6 +5,7 @@
  */
 package interfaces;
 
+import java.util.List;
 import models.Contact;
 
 /**
@@ -15,4 +16,5 @@ public interface ContactDAO {
     
     public Contact findByContactById(int contactId);
     
+    public List<Contact> listAllContacts();  
 }

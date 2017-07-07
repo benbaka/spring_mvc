@@ -9,8 +9,13 @@ import java.sql.PreparedStatement;
 import interfaces.ContactDAO;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
 import javax.sql.DataSource;
 import models.Contact;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowCountCallbackHandler;
+import org.springframework.jdbc.core.RowMapper;
 
 /**
  *
@@ -19,10 +24,12 @@ import models.Contact;
 public class JdbcContactDAO implements ContactDAO{
     
     private DataSource dataSource;
+    private JdbcTemplate jdbcTemplate;
     
     
     public void setDataSource(DataSource dataSource){
         this.dataSource = dataSource;
+        this.jdbcTemplate = new JdbcTemplate(this.dataSource);
     }
 
     @Override
@@ -52,6 +59,28 @@ public class JdbcContactDAO implements ContactDAO{
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+        
+    }
+
+    @Override
+    public List<Contact> listAllContacts() {
+        
+        String sql = "Select * from contact";
+        
+        List<Contact> listOfContacts = this.jdbcTemplate.query(sql, new RowMapper<Contact>(){
+
+            @Override
+            public Contact mapRow(ResultSet rs, int i) throws SQLException {
+                Contact innerContact = new Contact();
+                innerContact.setId(rs.getInt("id"));
+                innerContact.setName(rs.getString("name"));
+                return innerContact;
+            }
+            
+            
+        });
+        
+        return listOfContacts;
         
     }
     
